@@ -16,3 +16,145 @@
 开发环境和编译器并不能帮我们发现问题；而使用泛型的话，若编写时弄错类型，开发环境或编译器会提示类型错误，这称之为“类型安全”。
 因此泛型提高了程序的安全性；另外还省去了使用Object时繁琐的类型转换，明确了类型信息，使得代码的可读性也更好。
 - 但要记住，泛型是靠“擦除”实现了，编译成.class字节码文件时泛型参数都是Object。
+
+---
+工具类：
+
+```
+/**
+*  http请求工具类
+*/
+public class RestTemplateUtils {
+
+    private static RestTemplate restTemplate;
+
+    static {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(20*1000);
+        requestFactory.setReadTimeout(20*1000);
+        restTemplate = new RestTemplate(requestFactory);
+    }
+
+    private static Result sendResquestEntity(String url, HttpMethod method, JSONObject json,
+                                             Map<String, String> headers, Class clazz){
+        Result ret = new Result();
+
+        if (url == null){
+            return Result.fail(500,"Bad Request, Request URL is null");
+        }
+        HttpEntity<String> entity = null;
+        ResponseEntity<String> response = null;
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        if(headers != null && !headers.isEmpty()){
+            Set<Map.Entry<String, String>> set = headers.entrySet();
+            for(Iterator<Map.Entry<String, String>> it = set.iterator(); it.hasNext();){
+                Map.Entry<String, String> header = it.next();
+                if(header != null) {
+                    httpHeaders.set(header.getKey(), header.getValue());
+                }
+            }
+        }
+        String requestJson = null;
+        if(json != null) {
+            requestJson = json.toString();
+        }
+        entity = new HttpEntity<>(requestJson, httpHeaders);
+        try {
+           response = restTemplate.exchange(url, method, entity, String.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail(500,"请求失败");
+        }
+        int code = response.getStatusCodeValue();
+        if(code != 200){
+            return Result.fail(500,"error request");
+        }
+        String bodyString = response.getBody();
+
+        if(clazz != null){
+            JSONObject obj = JSON.parseObject(bodyString);
+            return Result.success(response.getStatusCodeValue(),response.getStatusCode().getReasonPhrase(),JSON.toJavaObject(obj,clazz));
+        }else {
+            return Result.success(response.getStatusCodeValue(),response.getStatusCode().getReasonPhrase(),bodyString);
+        }
+    }
+
+    public static Result get(String url,Class dataClazz){
+        return sendResquestEntity(url, HttpMethod.GET, null, null,dataClazz);
+    }
+
+    public static Result get(String url, HashMap<String, String> headers, Class dataClazz){
+        return sendResquestEntity(url, HttpMethod.GET, null, headers,dataClazz);
+    }
+
+
+    public static Result put(String url, JSONObject body, HashMap<String, String> headers,Class dataClazz) {
+        return sendResquestEntity(url, HttpMethod.PUT, body, headers,dataClazz);
+    }
+
+    public static Result patch(String url, JSONObject body, HashMap<String, String> headers,Class dataClazz) {
+        return sendResquestEntity(url, HttpMethod.PATCH, body, headers,dataClazz);
+    }
+
+    public static Result head(String url, HashMap<String, String> headers,Class dataClazz) {
+        return sendResquestEntity(url, HttpMethod.HEAD, null, headers,dataClazz);
+    }
+
+    public static Result delete(String url, HashMap<String, String> headers,Class dataClazz) {
+        return sendResquestEntity(url, HttpMethod.DELETE, null, headers,dataClazz);
+    }
+
+    public static Result post(String url, String jsonStr, HashMap<String, String> headers,Class dataClazz) throws UnsupportedEncodingException {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        if(headers != null && !headers.isEmpty()){
+            Set<Map.Entry<String, String>> set = headers.entrySet();
+            for(Iterator<Map.Entry<String, String>> it = set.iterator(); it.hasNext();){
+                Map.Entry<String, String> header = it.next();
+                if(header != null) {
+                    httpHeaders.set(header.getKey(), header.getValue());
+                }
+            }
+        }
+        HttpEntity<String> entity = new HttpEntity<>(jsonStr, httpHeaders);
+        ResponseEntity<String> response = null;
+        try {
+            response = restTemplate.postForEntity(url, entity, String.class);
+        }catch (HttpClientErrorException e){
+            return Result.fail(500,"请求错误");
+        }catch (Exception e){
+            return Result.fail(500,"接口异常");
+        }
+
+        int code = response.getStatusCodeValue();
+        if(code != 200){
+            return Result.fail(code,"error request");
+        }
+        String bodyString = response.getBody();
+
+        if(dataClazz != null){
+            JSONObject obj = JSON.parseObject(bodyString);
+            return Result.success(response.getStatusCodeValue(),response.getStatusCode().getReasonPhrase(),JSON.toJavaObject(obj,dataClazz));
+        }else {
+            return Result.success(response.getStatusCodeValue(),response.getStatusCode().getReasonPhrase(),bodyString);
+        }
+    }
+
+    public static Result post(String url, JSONObject json, HashMap<String, String> headers,Class dataClazz) throws UnsupportedEncodingException {
+
+        String requestJson = null;
+        if(json != null) {
+            requestJson = json.toString();
+        }
+        return post( url,  requestJson, headers,dataClazz);
+
+    }
+
+    public static RestTemplate getRestTemplate() {
+        return restTemplate;
+    }
+}
+```
+---
+
