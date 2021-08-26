@@ -1,7 +1,5 @@
-package com.notes.dairy.demo;
+package com.notes.demo;
 
-import com.notes.dairy.demo.A;
-import com.notes.dairy.demo.B;
 import org.junit.Test;
 
 /**

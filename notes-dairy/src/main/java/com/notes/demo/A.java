@@ -1,4 +1,4 @@
-package com.notes.dairy.demo;
+package com.notes.demo;
 
 public class A {
     public int num = 1;
