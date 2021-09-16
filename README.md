@@ -39,19 +39,19 @@
     }
 ```
    - 初始化与销毁: 需要执行一些代码来在测试逻辑执行前后完成一些初始化或销毁的操作.Junit5中有4个注解可能会用于如此工作:
-      # @BeforeAll 只执行一次,执行时机是在所有测试和@BeforeEach注解方法之前
-      # @BeforeEach 在每次测试执行之前执行
-      # @AfterEach 在每个测试执行之后执行
-      # @AfterAll 只执行一次,执行时机是在所有测试和@AfterEach注解方法之后
+      + @BeforeAll 只执行一次,执行时机是在所有测试和@BeforeEach注解方法之前
+      + @BeforeEach 在每次测试执行之前执行
+      + @AfterEach 在每个测试执行之后执行
+      + @AfterAll 只执行一次,执行时机是在所有测试和@AfterEach注解方法之后
    - 断言
-      # assertEquals(x,y) ; assertEquals(x,y,z)
-      # assertTrue(true, () -> {...} );   
-      # assertFalse(x)
-      # assertNotNull(Object obj) 检查对象不为空
-      # assertNull(Object obj) 检查对象为空
-      # assertArrayEquals(expectrArr,resultArr) 检查两个数组是否相等
-      # assertAll
-      # ...
+      + assertEquals(x,y) ; assertEquals(x,y,z)
+      + assertTrue(true, () -> {...} );   
+      + assertFalse(x)
+      + assertNotNull(Object obj) 检查对象不为空
+      + assertNull(Object obj) 检查对象为空
+      + assertArrayEquals(expectrArr,resultArr) 检查两个数组是否相等
+      + assertAll
+      + ...
    - junit测试方法超时与否 eg:
    ```
         @Test
@@ -62,7 +62,7 @@
 
    ```
    - 异常测试
-      # Junit 用代码处理提供了一个追踪异常的选项。你可以测试代码是否它抛出了想要得到的异常。expected 参数和 @Test 注释一起使用
+      + Junit 用代码处理提供了一个追踪异常的选项。你可以测试代码是否它抛出了想要得到的异常。expected 参数和 @Test 注释一起使用
    ```
         @Test(expected = NullPointerException)
 
@@ -70,7 +70,7 @@
    - 参数测试
       略...
    - 其他注解
-      # @After @Before @Ignore(忽略不需要执行的测试)   
+      + @After @Before @Ignore(忽略不需要执行的测试)   
    
    
    
