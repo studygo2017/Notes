@@ -1,15 +1,8 @@
-package com.notes.businessScenario.delayedQueue;
+package com.notes.businessScenario.expiredOrders.delayedQueue;
 
 import java.util.*;
 import java.util.concurrent.DelayQueue;
-import java.util.concurrent.Delayed;
-import java.util.concurrent.TimeUnit;
 
-/**
- * @author tiny
- * @date 2021/9/18 10:39
- * @Description:
- */
 public class OrderDelayDemo {
 
     public static void main(String[] args) throws InterruptedException {

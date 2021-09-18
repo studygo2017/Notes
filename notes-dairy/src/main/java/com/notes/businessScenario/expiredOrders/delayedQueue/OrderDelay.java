@@ -1,15 +1,10 @@
-package com.notes.businessScenario.delayedQueue;
+package com.notes.businessScenario.expiredOrders.delayedQueue;
 
 import lombok.Data;
 
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author tiny
- * @date 2021/9/17 18:03
- * @Description:
- */
 @Data
 public class OrderDelay implements Delayed {
 
