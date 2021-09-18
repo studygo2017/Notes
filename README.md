@@ -136,6 +136,39 @@ public class OrderDelayDemo {
 
 ```
 - 时间轮算法
+```
+@Data
+@AllArgsConstructor
+public class OrderTimerTask implements TimerTask {
+    private long orderId;
+
+    private long timeout; //延时时间 单位秒
+
+    private TimeUnit unit;
+
+    public void run(Timeout timeout) throws Exception {
+            System.out.println("删除xxx订单....................."+orderId);
+    }
+
+}
+
+/**
+ * netty框架提供的时间轮工具
+ * io.netty.util.HashedWheelTimer 来实现达到指定延时时间时开异步线程来删除未支付的订单
+ */
+public class HashWheelTimerDemo {
+
+    private static Timer timer = new HashedWheelTimer();
+
+    public static void main(String[] argv) throws InterruptedException {
+        OrderTimerTask orderTimerTask = new OrderTimerTask(100000L, 8,TimeUnit.SECONDS);
+        //异步线程,指定时间后执行其中run方法
+        timer.newTimeout(orderTimerTask, orderTimerTask.getTimeout(), orderTimerTask.getUnit());
+        TimeUtil.stopwatch(orderTimerTask.getTimeout()+1);
+    }
+
+}
+```
 - redis缓存
 - 消息中间件   
    
