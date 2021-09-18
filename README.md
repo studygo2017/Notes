@@ -78,6 +78,63 @@
 ### 用户下订单30分钟未支付,则自动取消的实现   
 - 容易想到的方案: 数据库轮询; 但除了小型项目否则不会采用;因为对服务器内存消耗过大,对数据库资源占用过多,并且存在延迟--最大的延迟时间就是轮询的间隔时间
 - jdk的延迟队列
+```
+@Data
+public class OrderDelay implements Delayed {
+
+    //订单id
+    private String orderId;
+
+    //超时时刻,单位纳秒
+    private long timeout;
+
+    public OrderDelay(String orderId, long timeout) {
+        this.orderId = orderId;
+        this.timeout = TimeUnit.NANOSECONDS.convert(timeout,TimeUnit.SECONDS) + System.nanoTime();
+    }
+
+    //返回值小于等于0时即延时时间到
+    @Override
+    public long getDelay(TimeUnit unit) {
+        return unit.convert(timeout- System.nanoTime(),TimeUnit.NANOSECONDS);
+    }
+
+    //定义延时队列的元素排序规则
+    @Override
+    public int compareTo(Delayed o) {
+        if(o==this) return 0;
+        OrderDelay orderDelay = (OrderDelay) o;
+        long d = this.getDelay(TimeUnit.NANOSECONDS) - orderDelay.getDelay(TimeUnit.NANOSECONDS);
+        return d==0 ? 0 : (d > 0 ? 1 : -1) ;
+    }
+
+    public void print(){
+        System.out.println("删除订单............................"+this.orderId);
+    }
+
+}
+
+public class OrderDelayDemo {
+
+    public static void main(String[] args) throws InterruptedException {
+
+        Set<String> orderIds = new LinkedHashSet<String>(){{add("00000001");add("00000002");add("00000003");add("00000004");add("00000005");}};
+        DelayQueue<OrderDelay> queue = new DelayQueue<OrderDelay>();
+        int second = 0; //延迟的秒数
+        for (String orderId : orderIds) {
+            queue.put( new OrderDelay(orderId,++second) );
+        }
+        long start = System.currentTimeMillis();
+        while (true){
+            OrderDelay take = queue.take();
+            long end = System.currentTimeMillis();
+            System.out.println( (end-start) + "毫秒后删除订单"+take.getOrderId() );
+        }
+    }
+
+}
+
+```
 - 时间轮算法
 - redis缓存
 - 消息中间件   
