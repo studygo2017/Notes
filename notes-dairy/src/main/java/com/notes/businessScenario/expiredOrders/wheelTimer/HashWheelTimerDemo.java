@@ -1,9 +1,7 @@
 package com.notes.businessScenario.expiredOrders.wheelTimer;
 
 import com.notes.utils.TimeUtil;
-import com.sun.org.apache.xpath.internal.operations.Or;
 import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
 import io.netty.util.Timer;
 
 import java.util.concurrent.TimeUnit;
